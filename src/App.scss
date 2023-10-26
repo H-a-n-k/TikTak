@@ -36,3 +36,37 @@
     transform: rotate(360deg);
   }
 }
+//Shared
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+//Component
+
+.table-basic{
+  table, th,td {
+    border: 1px solid black;
+  }
+}
+
+
+
+.dialog-wrapper {
+  @extend .flex-center;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba($color: black, $alpha: .33);
+
+  .content{
+    background-color: white;
+    border-radius: 40px;
+    padding: 40px;
+  }
+}

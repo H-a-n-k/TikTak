@@ -35,35 +35,36 @@ interface SuperTask {
 export default class Task implements TableItem { 
     //normal task
     id: number = -1;
-    name: string;
-    content: string;
-    reward: number;
-    penalty: number;
-    begin?: Date;
-    deadline?: Nullable<Date>;
+    name?: string;
+    content?: string;
+    reward?: number;
+    penalty?: number;
+    user?: Nullable<User>;
+    begin?: string;
+    deadline?: string;
     state?: TaskState = TaskState.new;
     
     category?: Nullable<Category>;
-    user?: Nullable<User>;
 
     repeat?: Nullable<Repeat>;
     subTasks?: Nullable<SubTasks>;
     superTask?: Nullable<SuperTask>;
 
     constructor(
-        name: string, content: string,
-        reward: number, penalty: number,
-        begin?: Nullable<Date>, deadline?: Nullable<Date>,
-        category?: Nullable<Category>, user?: Nullable<User>,
-        repeat?: Nullable<Repeat>, subTasks?: Nullable<SubTasks>,
+        name?: string, content?: string,
+        reward?: number, penalty?: number, user?: Nullable<User>,
+        begin?: string, deadline?: string,
+        category?: Nullable<Category>, 
+        repeat?: Nullable<Repeat>,
+        subTasks?: Nullable<SubTasks>,
         superTask?: Nullable<SuperTask>
     )
     { 
-        this.name = name;
-        this.content = content;
-        this.reward = reward;
-        this.penalty = penalty;
-        this.begin = begin || new Date(Date.now());
+        this.name = name || '';
+        this.content = content || '';
+        this.reward = reward || 0;
+        this.penalty = penalty || 0;
+        this.begin = begin;
         this.deadline = deadline;
         this.category = category;
         this.user = user;

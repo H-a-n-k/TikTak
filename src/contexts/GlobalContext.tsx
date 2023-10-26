@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import getDbo, { Dbo } from "../data/dbo";
+import getDbo, { Dbo, copyData } from "../data/dbo";
 import { Nullable } from "../models/Nullable";
 
 interface Props {
@@ -32,9 +32,11 @@ export default function GlobalContextProvider({ children }: Props) {
     useEffect(() => { 
         const dboJson = getDboFromStorage();
         if (dboJson) {
-            setDbo(dboJson);
+            //setDbo(dboJson);
+            setDbo(copyData(dboJson));
         } else { 
-            localStorage.setItem('dbo', JSON.stringify(dbo));
+            //localStorage.setItem('dbo', JSON.stringify(dbo));
+            dbo.saveChanges();
         }
 
     }, [])

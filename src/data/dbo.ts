@@ -6,7 +6,7 @@ import User from "../models/User";
 
 interface Config { 
     appName: string,
-    lastUpdate: Date
+    lastUpdate: Date,
 }
 
 export interface Dbo { 
@@ -14,10 +14,23 @@ export interface Dbo {
     tbUser: MyTable<User>,
     tbTask: MyTable<Task>,
     tbLog: MyTable<Log>,
-    config: Config
+    config: Config,
+
+    saveChanges: () => void
+}
+
+export function copyData(newItem: Dbo): Dbo { 
+    const res = getDbo();
+    res.tbCategory.copyData(newItem.tbCategory)
+    res.tbTask.copyData(newItem.tbTask)
+    res.tbLog.copyData(newItem.tbLog)
+    res.tbUser.copyData(newItem.tbUser)
+
+    return res;
 }
 
 export default function getDbo(): Dbo {
+
     return {
         tbCategory: new MyTable<Category>(),
         tbUser: new MyTable<User>(),
@@ -26,6 +39,10 @@ export default function getDbo(): Dbo {
         config: {
             appName: 'TikTakApp',
             lastUpdate: new Date(Date.now())
+        },
+
+        saveChanges: function () { 
+            localStorage.setItem('dbo', JSON.stringify(this));
         }
     }
 }
