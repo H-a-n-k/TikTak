@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import GeneralObject from "../../models/GeneralObject"
 import DialogWrapper from "./DialogWrapper";
 import FormInput, { FormInputInfo } from "./FormInput";

@@ -31,4 +31,4 @@ function resetTime(date: Date): Date {
     return newDate;
 }
 
-export { ToDMYFormat, ToYMDFormat, addDays, resetTime}
+export { ToDMYFormat, ToYMDFormat, ReverseDMY, addDays, resetTime }

@@ -1,19 +1,42 @@
 import GeneralObject from "../../models/GeneralObject"
-import { ToDMYFormat } from "../../utils/datetime"
+import { ReverseDMY } from '../../utils/datetime'
 
-interface Props<T> { 
-    dataSource: T[],
-    columns: {
-        title: string,
-        key: string
-    }[],
-    actions?: {
-        icon: JSX.Element,
-        action: (item: T) => void
-    }[]
+export interface TableColumn {
+    title: string,
+    key: string,
+    processor?: (i: any) => any
 }
 
-export default function DataTable<T extends GeneralObject>({ dataSource, columns, actions }: Props<T>) { 
+export interface TableAction<T> {
+    icon: JSX.Element,
+    action: (item: T) => void
+}
+
+export interface Props<T> { 
+    dataSource: T[],
+    columns: TableColumn[],
+    actions?: TableAction<T>[]
+}
+
+export const DataProcessor = {
+    numberProcessor: (i: number): number => {
+        if (isNaN(i)) return 0;
+
+        return i;
+    },
+
+    dateProcessor: (i: string): string => { 
+        return ReverseDMY(i);
+    }
+}
+
+export default function DataTable<T extends GeneralObject>({ dataSource, columns, actions }: Props<T>) {
+ 
+    const getData = (obj: T, key: string, processor?: (i: any) => any): any => {
+        var val = obj[key] === undefined ? '#' : obj[key]
+        if (processor) val = processor(val);
+        return val
+    }
 
     return <div className="table-basic">
         {(columns && columns.length && dataSource && dataSource.length) ?
@@ -31,11 +54,11 @@ export default function DataTable<T extends GeneralObject>({ dataSource, columns
 
                 <tbody>
                     {dataSource.map((obj, ind) => <>
-                        <tr key={'r-'+ind}>
+                        <tr key={'r-' + ind}>
                             {columns.map(col => <>
                                 <td key={ind + '-' + col.key}>
-                                    {obj[col.key] === undefined ? '#': obj[col.key]}
-                                </td> 
+                                    {getData(obj, col.key, col.processor)}
+                                </td>
                             </>)}
 
                             <td>

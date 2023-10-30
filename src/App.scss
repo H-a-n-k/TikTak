@@ -1,46 +1,41 @@
-.App {
-  text-align: center;
+
+//defaults
+:root{
+
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+a{
+  color: initial;
+  text-decoration: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
 //Shared
 .flex-center {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}
+
+.invisible {
+  visibility: hidden;
 }
 
 
@@ -51,8 +46,6 @@
     border: 1px solid black;
   }
 }
-
-
 
 .dialog-wrapper {
   @extend .flex-center;
@@ -67,6 +60,77 @@
   .content{
     background-color: white;
     border-radius: 40px;
+    padding: 40px;
+  }
+}
+
+.side-menu {
+  font-size: 1.5em;
+  min-height: 100vh;
+
+  background-color: whitesmoke;
+  $animation-time: 0.5s;
+  $menu-width: 10vw; //add the icon width
+
+  .item {
+    position: relative;
+    padding: 20px;
+    
+    border-bottom: 1px solid grey;
+
+    .icon {
+      margin-right: 1em;
+
+      transition: margin $animation-time ease-in-out;
+    }
+
+    .label {
+      overflow: hidden;
+      width: $menu-width;
+
+      transition: width $animation-time ease-in-out;
+    }
+
+    &.header {
+      flex-direction: row-reverse;
+      justify-content: space-between;
+      font-weight: bold;
+
+      .icon {
+        margin-right: 0;
+
+        &:hover{
+          color: pink;
+        }
+      }
+    }
+
+    &:hover:not(.header){
+      background-color: grey;
+    }
+  }
+
+
+  &.close {
+    .label {
+      width: 0;
+
+      transition: width $animation-time ease-in-out;
+    }
+
+    .icon {
+      margin-right: 0;
+
+      transition: margin $animation-time ease-in-out;
+    }
+  }
+}
+
+//================================
+.layout-1{
+  display: flex;
+
+  .page-content{
     padding: 40px;
   }
 }

@@ -15,7 +15,8 @@ export interface FormInputInfo {
     name: string, //id, name
     label: string,
     placeHolder?: string,
-    autoFocus?: boolean
+    autoFocus?: boolean,
+    hidden?: boolean
 }
 
 export interface FormInputData {
@@ -29,7 +30,7 @@ interface FormInputProps extends FormInputData, FormInputInfo {
 }
 
 export default function FormInput(
-    { type, name, label, placeHolder, formData, setFormData, submitForm, autoFocus }: FormInputProps)
+    { type, name, label, placeHolder, formData, setFormData, submitForm, autoFocus, hidden }: FormInputProps)
 {  
     const onChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
         const target = e.target;
@@ -43,12 +44,16 @@ export default function FormInput(
         if (e.key === 'Enter') { 
             submitForm()
         }
+
+        if (type === FormInputType.number) { 
+            if (e.key === 'e') e.preventDefault();
+        }
     }
 
     return <>
-        <label htmlFor={name}>{label}</label>
+        {!hidden && <label htmlFor={name}>{label}</label> }
         <input type={type} id={name} name={name} placeholder={placeHolder} autoFocus={autoFocus}
-            value={formData[name]} onChange={onChange} onKeyDown={onKeyDown}
+            value={formData[name]} onChange={onChange} onKeyDown={onKeyDown} hidden={hidden}
         />
     </>
 }

@@ -37,7 +37,7 @@ export default class Task implements TableItem {
     id: number = -1;
     name?: string;
     content?: string;
-    reward?: number;
+    reward?: number = 0;
     penalty?: number;
     user?: Nullable<User>;
     begin?: string;
