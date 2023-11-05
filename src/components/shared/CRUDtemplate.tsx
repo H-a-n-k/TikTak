@@ -45,7 +45,8 @@ export default function CRUDtemplate<T extends TableItem>(
 
     const data: T[] = useMemo(() => {
         return getData(dbo);
-    }, [refresh, dbo]);
+        // eslint-disable-next-line
+    }, [refresh, dbo, getData]);
 
     const columns: TableColumn[] = TableColumns;
     const actions: TableAction<T>[] = useMemo(
@@ -91,8 +92,6 @@ export default function CRUDtemplate<T extends TableItem>(
         setMode(Mode.List);
         setSelectedItem(null)
     }
-
-    const t: TableItem = {id: -1}
 
     return <>
         <h2>{title}</h2>

@@ -1,8 +1,13 @@
+import { useMemo } from 'react'
 import { DataProcessor, TableColumn } from "../components/shared/DataTable";
-import { FormInputInfo, FormInputType } from "../components/shared/FormInput";
+import { FormInputInfo, FormInputType, SelectOpt } from "../components/shared/FormInput";
 import Task from "../models/Task";
 import { addTask, deleteTask, getListTask, updateTask } from "../services/task";
 import CRUDtemplate from "../components/shared/CRUDtemplate";
+import { getListCate } from '../services/category';
+import { useGlobalContext } from '../contexts/GlobalContext';
+import TaskDTO from '../dto/TaskDTO';
+import GeneralObject from '../models/GeneralObject';
 
 const TableColumns: TableColumn[] = [
     {
@@ -37,6 +42,13 @@ const TableColumns: TableColumn[] = [
         key: 'deadline',
         processor: DataProcessor.dateProcessor
     },
+    {
+        title: 'Category',
+        key: 'category',
+        processor: (obj: GeneralObject) => { 
+            return obj['name']
+        }
+    },
 ]
 
 //add form
@@ -63,22 +75,31 @@ const inputsAdd: FormInputInfo[] = [
         label: "penalty"
     },
     {
-        type: FormInputType.date,
+        type: FormInputType.datetime,
         name: "begin",
         label: "begin"
     },
     {
-        type: FormInputType.date,
+        type: FormInputType.datetime,
         name: "deadline",
         label: "deadline"
     },
 ]
 
 const TaskPage = () => {
+    const { dbo } = useGlobalContext();
+
+    const cates: SelectOpt[] = useMemo(() => { 
+        const categories = getListCate(dbo);
+        const res: SelectOpt[] = categories.map(x => { return { display: x.name, val: x.id + '' } as SelectOpt });
+        return res;
+    }, [dbo])
+
+    const inpsAdd = [...inputsAdd, { type: FormInputType.select, label: 'Category', name: 'categoryID', options: cates } as FormInputInfo]
     
     return <CRUDtemplate<Task>
         title="Task" TableColumns={TableColumns} getData={getListTask}
-        inputsAdd={inputsAdd}
+        inputsAdd={inpsAdd}
         addService={addTask} editService={updateTask} deleteService={deleteTask}
     />
 }

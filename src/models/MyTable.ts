@@ -1,4 +1,3 @@
-import { Nullable } from "./Nullable";
 import TableItem from "./TableItem";
 
 export default class MyTable<T extends TableItem>  { 
@@ -14,7 +13,7 @@ export default class MyTable<T extends TableItem>  {
     remove (id: number): boolean { 
         if (!this.checkId(id)) return false;
 
-        this.items = this.items.filter(x => x.id !== id);
+        this.items = this.items.filter(x => x.id != id);
         return true;
     }
 
@@ -22,13 +21,12 @@ export default class MyTable<T extends TableItem>  {
         if (!this.checkId(item.id)) return false;
 
         console.log(this.items)
-        this.items = this.items.map(x => x.id  === item.id ? item : x);
-        console.log(this.items);
+        this.items = this.items.map(x => x.id  == item.id ? item : x);
         return true;
     }
 
-    find (id: number) : Nullable<T> { 
-        return this.items.find(x => x.id === id);
+    find (id: number) : T | undefined { 
+        return this.items.find(x => x.id == id);
     }
 
     getList () : T[] {
@@ -41,7 +39,7 @@ export default class MyTable<T extends TableItem>  {
     }
 
     checkId(id: number): boolean { 
-        return this.items.some(x => x.id === id);
+        return this.items.some(x => x.id == id);
     }
 
     copyData(newItem: MyTable<T>) { 

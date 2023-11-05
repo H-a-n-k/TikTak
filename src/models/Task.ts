@@ -1,4 +1,4 @@
-import Category from "./Category";
+import { ToYMDFormat, getDateEnd, getDateStart } from "../utils/datetime";
 import { Nullable } from "./Nullable";
 import TableItem from "./TableItem";
 import User from "./User";
@@ -14,22 +14,7 @@ export enum TaskState {
     finished = "Finished",
     late = "Late",
     failed = "Failed",
-    deleted = 'deleted'
-}
-
-interface Repeat { 
-    cycleArr: number[];
-    cycleTime: TimeSpan | null;
-    cycleEnd?: Date;
-}
-interface SubTasks { 
-    subTasks: Task[];
-    target: number;
-}
-
-interface SuperTask { 
-    superTask: Task;
-    required?: boolean;
+    disable = 'Disable'
 }
 
 export default class Task implements TableItem { 
@@ -44,32 +29,43 @@ export default class Task implements TableItem {
     deadline?: string;
     state?: TaskState = TaskState.new;
     
-    category?: Nullable<Category>;
+    categoryID?: number = -1;
 
-    repeat?: Nullable<Repeat>;
-    subTasks?: Nullable<SubTasks>;
-    superTask?: Nullable<SuperTask>;
+    //repeat
+    cycleArr?: number[];
+    cycleTime?: TimeSpan;
+    cycleEnd?: Date;
+
+    //sub task
+    target?: number;
+
+    //super task
+    superTaskID?: number;
+    required?: boolean;
 
     constructor(
         name?: string, content?: string,
         reward?: number, penalty?: number, user?: Nullable<User>,
-        begin?: string, deadline?: string,
-        category?: Nullable<Category>, 
-        repeat?: Nullable<Repeat>,
-        subTasks?: Nullable<SubTasks>,
-        superTask?: Nullable<SuperTask>
+        begin?: string, deadline?: string, categoryID?: number, 
+        cycleArr?: number[], cycleTime?: TimeSpan, cycleEnd?: Date,
+        target?: number,
+        superTaskID?: number,
+        required?: boolean,
     )
     { 
         this.name = name || '';
         this.content = content || '';
         this.reward = reward || 0;
         this.penalty = penalty || 0;
-        this.begin = begin;
-        this.deadline = deadline;
-        this.category = category;
+        this.begin = begin || ToYMDFormat(getDateStart(new Date(Date.now())));
+        this.deadline = deadline || ToYMDFormat(getDateEnd(new Date(Date.now())));
+        this.categoryID = categoryID;
         this.user = user;
-        this.repeat = repeat;
-        this.subTasks = subTasks;
-        this.superTask = superTask;
+        this.cycleArr = cycleArr;
+        this.cycleTime = cycleTime;
+        this.cycleEnd = cycleEnd;
+        this.target = target;
+        this.superTaskID = superTaskID;
+        this.required = required;
     }
 }

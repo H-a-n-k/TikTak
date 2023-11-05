@@ -1,13 +1,16 @@
-import { useEffect } from "react";
-import GeneralObject from "../../models/GeneralObject"
-import { ToYMDFormat } from "../../utils/datetime";
 
 export enum FormInputType { 
     text = 'text',
     number = 'number',
     date = 'date',
-    dropdown = 'dropdown',
-    radio = 'radio'
+    datetime = 'datetime-local',
+    radio = 'radio',
+    select = 'select'
+}
+
+export interface SelectOpt { 
+    val: string,
+    display: string
 }
 
 export interface FormInputInfo { 
@@ -16,7 +19,9 @@ export interface FormInputInfo {
     label: string,
     placeHolder?: string,
     autoFocus?: boolean,
-    hidden?: boolean
+    hidden?: boolean,
+
+    options?: SelectOpt[]
 }
 
 export interface FormInputData {
@@ -30,9 +35,9 @@ interface FormInputProps extends FormInputData, FormInputInfo {
 }
 
 export default function FormInput(
-    { type, name, label, placeHolder, formData, setFormData, submitForm, autoFocus, hidden }: FormInputProps)
+    { type, name, label, placeHolder, formData, setFormData, submitForm, autoFocus, hidden, options }: FormInputProps)
 {  
-    const onChange = (e: React.ChangeEvent<HTMLInputElement>) => { 
+    const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => { 
         const target = e.target;
         var value: any = target.value;
         if (type === FormInputType.number) value = parseInt(target.value)
@@ -48,6 +53,22 @@ export default function FormInput(
         if (type === FormInputType.number) { 
             if (e.key === 'e') e.preventDefault();
         }
+    }
+
+    if (type === FormInputType.select) { 
+        if(!options) return <></>
+
+        return <>
+            {!hidden && <label htmlFor={name}>{label}</label>}
+            <select name={name} id={name} value={formData[name] ?? '-1'} onChange={onChange} hidden={hidden}>
+                <option value="-1">None</option>
+                {options.map((x, ind) => <>
+                    <option key={x.val} value={x.val}>
+                        {x.display}
+                    </option>
+                </>)}
+            </select>
+        </>
     }
 
     return <>

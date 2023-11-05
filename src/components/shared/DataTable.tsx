@@ -1,5 +1,5 @@
 import GeneralObject from "../../models/GeneralObject"
-import { ReverseDMY } from '../../utils/datetime'
+import { DisplayDate } from '../../utils/datetime'
 
 export interface TableColumn {
     title: string,
@@ -26,14 +26,14 @@ export const DataProcessor = {
     },
 
     dateProcessor: (i: string): string => { 
-        return ReverseDMY(i);
-    }
+        return DisplayDate(i);
+    },
 }
 
 export default function DataTable<T extends GeneralObject>({ dataSource, columns, actions }: Props<T>) {
  
     const getData = (obj: T, key: string, processor?: (i: any) => any): any => {
-        var val = obj[key] === undefined ? '#' : obj[key]
+        var val = obj[key] ?? '#' 
         if (processor) val = processor(val);
         return val
     }

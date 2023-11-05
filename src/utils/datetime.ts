@@ -2,7 +2,7 @@
 const ToDMYFormat = (date: Date): string => { 
     if (!date) return '';
     var ymd = date.toISOString().split('T')[0];
-    var dmy = ymd.split('-').reverse().join('/');
+    var dmy = ymd.split('-').reverse().join('-');
 
     return dmy
 }
@@ -14,8 +14,11 @@ const ToYMDFormat = (date: Date): string => {
     return ymd
 }
 
-const ReverseDMY = (date: string) => { 
-    var rv = date.split('-').reverse().join('-');
+const DisplayDate = (date: string) => { 
+    var d: string = date.split('T')[0];
+    var t: string = date.split('T')[1] || '';
+
+    var rv = d.split('-').reverse().join('-') + ' ' + t;
     return rv
 }
 
@@ -25,10 +28,16 @@ function addDays(date: Date, days: number): Date {
     return result;
 }
 
-function resetTime(date: Date): Date { 
+function getDateStart(date: Date): Date { 
     var newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
     return newDate;
 }
 
-export { ToDMYFormat, ToYMDFormat, ReverseDMY, addDays, resetTime }
+function getDateEnd(date: Date): Date {
+    var newDate = new Date(date);
+    newDate.setHours(23, 59, 59, 0);
+    return newDate;
+}
+
+export { ToDMYFormat, ToYMDFormat, DisplayDate, addDays, getDateStart, getDateEnd }

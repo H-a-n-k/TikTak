@@ -6,6 +6,10 @@ import { addCate, deleteCate, getListCate, updateCate } from "../services/catego
 
 const columns: TableColumn[] = [
     {
+        title: 'ID',
+        key: 'id'
+    },
+    {
         title: 'Name',
         key: 'name'
     }

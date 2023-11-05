@@ -1,4 +1,5 @@
 import { Dbo } from "../data/dbo";
+import TaskDTO from "../dto/TaskDTO";
 import Task from "../models/Task";
 
 export const addTask = (dbo: Dbo, item: Task): boolean => {
@@ -7,11 +8,20 @@ export const addTask = (dbo: Dbo, item: Task): boolean => {
     return flag;
 }
 
-export const getListTask = (dbo: Dbo): Task[] => {
-    const data = dbo.tbTask.items;
+export const getListTask = (dbo: Dbo): TaskDTO[] => {
+    const dataRaw: Task[] = dbo.tbTask.items;
+    const data: TaskDTO[] = dataRaw.map(x => new TaskDTO(x, dbo));
 
     return data;
 };
+
+export const findTask = (dbo: Dbo, id: number): Task | undefined => {
+    return dbo.tbTask.find(id);
+}
+
+export const getListSubTask = (dbo: Dbo, id: number): Task[] => { 
+    return dbo.tbTask.getList().filter(x => x.superTaskID === id);
+}
 
 export const deleteTask = (dbo: Dbo, id: number): boolean => {
     const flag = dbo.tbTask.remove(id);
