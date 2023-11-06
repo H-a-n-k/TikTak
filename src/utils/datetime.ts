@@ -9,7 +9,8 @@ const ToDMYFormat = (date: Date): string => {
 
 const ToYMDFormat = (date: Date): string => {
     if (!date) return '';
-    var ymd = date.toISOString().split('T')[0];
+    date.setHours(date.getHours() - (date.getTimezoneOffset() / 60))
+    var ymd = date.toISOString().split('.')[0];
 
     return ymd
 }

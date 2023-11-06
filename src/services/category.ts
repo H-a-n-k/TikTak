@@ -1,5 +1,7 @@
 import { Dbo } from "../data/dbo";
 import Category from "../models/Category";
+import Task from "../models/Task";
+import { getListTaskOfCate, updateTask } from "./task";
 
 export const getListCate = (dbo: Dbo): Category[] => { 
     return dbo.tbCategory.getList()
@@ -22,7 +24,12 @@ export const updateCate = (dbo: Dbo, cate: Category): boolean => {
 }
 
 export const deleteCate = (dbo: Dbo, id: number): boolean => {
-    var flag: boolean = dbo.tbCategory.remove(id);
-    if(flag) dbo.saveChanges();
-    return flag;
+    if (!dbo.tbCategory.remove(id)) return false;
+    var tasks: Task[] = getListTaskOfCate(dbo, id);
+    tasks.forEach(x => {
+        if (!updateTask(dbo, { ...x, categoryID: -1 })) return false;
+    });
+
+    dbo.saveChanges();
+    return true;
 }

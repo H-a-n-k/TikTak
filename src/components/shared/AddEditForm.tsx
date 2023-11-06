@@ -1,11 +1,11 @@
 import { useState } from "react";
 import GeneralObject from "../../models/GeneralObject"
 import DialogWrapper from "./DialogWrapper";
-import FormInput, { FormInputInfo } from "./FormInput";
+import FormInput, { FormInputGenerator, FormInputInfo } from "./FormInput";
 
 interface Props<T> { 
     object: T,
-    inputs: FormInputInfo[],
+    inputs: (FormInputInfo | FormInputGenerator)[],
     closeDialog: () => void,
     onSubmit: (t: T) => boolean
 }
@@ -24,8 +24,8 @@ export default function AddEditForm<T extends GeneralObject>({ object, inputs, c
     return <>
         <DialogWrapper closeDialog={closeDialog}>
             <div>
-                {inputs && inputs.map((x) =>
-                    <div key={x.name}>
+                {inputs && inputs.map((x, ind) =>
+                    <div key={ind}>
                         <FormInput {...x} formData={formData} setFormData={setFormData} submitForm={handleSubmit} />
                     </div>)
                 }

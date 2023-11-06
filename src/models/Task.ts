@@ -1,4 +1,3 @@
-import { ToYMDFormat, getDateEnd, getDateStart } from "../utils/datetime";
 import { Nullable } from "./Nullable";
 import TableItem from "./TableItem";
 import User from "./User";
@@ -57,8 +56,8 @@ export default class Task implements TableItem {
         this.content = content || '';
         this.reward = reward || 0;
         this.penalty = penalty || 0;
-        this.begin = begin || ToYMDFormat(getDateStart(new Date(Date.now())));
-        this.deadline = deadline || ToYMDFormat(getDateEnd(new Date(Date.now())));
+        this.begin = begin// || ToYMDFormat(getDateStart(new Date(Date.now())));
+        this.deadline = deadline// || ToYMDFormat(getDateEnd(new Date(Date.now())));
         this.categoryID = categoryID;
         this.user = user;
         this.cycleArr = cycleArr;

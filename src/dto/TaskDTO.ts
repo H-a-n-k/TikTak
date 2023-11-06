@@ -28,9 +28,8 @@ export default class TaskDTO extends Task {
     include = (dbo: Dbo, recur: boolean = true): void => {
         if (this.categoryID && this.categoryID > 0) { 
             this.category = findCate(dbo, this.categoryID);
-            var id: number = this.categoryID;
         }
-        this.subTasks = getListSubTask(dbo, this.id) as TaskDTO[];
+        this.subTasks = getListSubTask(dbo, this.id).map(x => new TaskDTO(x));
         this.noRequired = this.subTasks.filter(x => x.required).length;
         this.noCompleted = this.subTasks.filter(x => x.state === TaskState.finished).length;
         if (this.superTaskID) this.superTask = findTask(dbo, this.superTaskID);

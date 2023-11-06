@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useGlobalContext } from "../../contexts/GlobalContext"
 import DataTable, { TableAction, TableColumn } from "../../components/shared/DataTable";
 import AddEditForm from "../../components/shared/AddEditForm";
-import { FormInputInfo, FormInputType } from "../../components/shared/FormInput";
+import { FormInputGenerator, FormInputInfo, FormInputType } from "../../components/shared/FormInput";
 import { DeleteIcon, EditIcon } from "../../utils/icons";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import TableItem from "../../models/TableItem";
@@ -15,15 +15,16 @@ enum Mode {
 
 export interface CRUDtemplateProps<T> { 
     title: string, TableColumns: TableColumn[],
-    getData: (dbo: Dbo) => T[],
-    inputsAdd: FormInputInfo[], inputsEdit?: FormInputInfo[],
+    data: T[],
+    setRefresh: React.Dispatch<React.SetStateAction<boolean>>,
+    inputsAdd: (FormInputInfo | FormInputGenerator)[], inputsEdit?: (FormInputInfo | FormInputGenerator)[],
     addService: (dbo: Dbo, item: T) => boolean,
     editService: (dbo: Dbo, item: T) => boolean,
     deleteService: (dbo: Dbo, id: number) => boolean
 }
 
 export default function CRUDtemplate<T extends TableItem>(
-    { title, TableColumns, getData, inputsAdd, inputsEdit, addService, editService, deleteService }: CRUDtemplateProps<T>
+    { title, TableColumns, data, setRefresh, inputsAdd, inputsEdit, addService, editService, deleteService }: CRUDtemplateProps<T>
 ) {
 
     if (!inputsEdit) inputsEdit = [...inputsAdd]
@@ -41,12 +42,6 @@ export default function CRUDtemplate<T extends TableItem>(
 
     const [selectedItem, setSelectedItem] = useState<T | null>(null)
     const [mode, setMode] = useState<Mode>(Mode.List);
-    const [refresh, setRefresh] = useState<boolean>(false);
-
-    const data: T[] = useMemo(() => {
-        return getData(dbo);
-        // eslint-disable-next-line
-    }, [refresh, dbo, getData]);
 
     const columns: TableColumn[] = TableColumns;
     const actions: TableAction<T>[] = useMemo(

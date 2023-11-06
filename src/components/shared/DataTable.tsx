@@ -43,31 +43,31 @@ export default function DataTable<T extends GeneralObject>({ dataSource, columns
             <table>
                 <thead>
                     <tr>
-                        {columns.map(x => <>
+                        {columns.map(x => 
                             <th key={x.key}>
                                 {x.title}
-                            </th>
-                        </>)}
-                        {actions && <th></th>}
+                            </th>    
+                        )}
+                        {actions && <th key='actions-placeholder'></th>}
                     </tr>
                 </thead>
 
                 <tbody>
-                    {dataSource.map((obj, ind) => <>
-                        <tr key={'r-' + ind}>
-                            {columns.map(col => <>
-                                <td key={ind + '-' + col.key}>
+                    {dataSource.map((obj, rowInd) => 
+                        <tr key={'r-' + rowInd}>
+                            {columns.map(col =>
+                                <td key={'r-' + rowInd + '-c-' + col.key}>
                                     {getData(obj, col.key, col.processor)}
                                 </td>
-                            </>)}
+                            )}
 
                             <td>
-                                {actions && actions.map((action, ind) => <a key={'a-' + ind} onClick={() => { action.action(obj) }}>
+                                {actions && actions.map((action, ind) => <span className="pointer" key={'r-' + rowInd + '-a-' + ind} onClick={() => { action.action(obj) }}>
                                     {action.icon}
-                                </a>)}
+                                </span>)}
                             </td>
                         </tr>
-                    </>)}
+                    )}
                 </tbody>
             </table>
             :

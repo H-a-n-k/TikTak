@@ -8,11 +8,10 @@ export const addTask = (dbo: Dbo, item: Task): boolean => {
     return flag;
 }
 
-export const getListTask = (dbo: Dbo): TaskDTO[] => {
+export const getListTask = (dbo: Dbo): Task[] => {
     const dataRaw: Task[] = dbo.tbTask.items;
-    const data: TaskDTO[] = dataRaw.map(x => new TaskDTO(x, dbo));
 
-    return data;
+    return dataRaw;
 };
 
 export const findTask = (dbo: Dbo, id: number): Task | undefined => {
@@ -33,4 +32,18 @@ export const updateTask = (dbo: Dbo, item: Task): boolean => {
     const flag = dbo.tbTask.update(item);
     if (flag) dbo.saveChanges();
     return flag;
+};
+
+export const getListTaskDTO = (dbo: Dbo): TaskDTO[] => {
+    const dataRaw: Task[] = dbo.tbTask.items;
+    const data: TaskDTO[] = dataRaw.map(x => new TaskDTO(x, dbo));
+
+    return data;
+};
+
+export const getListTaskOfCate = (dbo: Dbo, cateID: number): Task[] => {
+    const dataRaw: Task[] = dbo.tbTask.items;
+    const data: Task[] = dataRaw.filter(x => x.categoryID === cateID);
+
+    return data;
 };
