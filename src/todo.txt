@@ -1,5 +1,11 @@
 tasks:
+- schedule picker
+-- checkbox isRepeated
+-- toggle show for schedule picker
+-- select cycle span
+-- select cycle end
 - data validations
 
 issues:
 - number turned to string after parsing from json
+- Task: repeat: changing type, count does not change array

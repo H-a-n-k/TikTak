@@ -5,6 +5,7 @@ export enum FormInputType {
     date = 'date',
     datetime = 'datetime-local',
     radio = 'radio',
+    checkbox = 'checkbox',
     selectNumber = 'select',
 }
 
@@ -53,6 +54,10 @@ export default function FormInput( props: FormInputProps)
         const target = e.target;
         var value: any = target.value;
         if ([FormInputType.number, FormInputType.selectNumber].includes(type)) value = parseInt(target.value)
+        if (type === FormInputType.checkbox) { 
+            const t = target as HTMLInputElement
+            value = t.checked;
+        }
 
         setFormData({ ...formData, [target.id]: value })
     }
@@ -84,7 +89,7 @@ export default function FormInput( props: FormInputProps)
     return <>
         {!hidden && <label htmlFor={name}>{label}</label> }
         <input type={type} id={name} name={name} placeholder={placeHolder} autoFocus={autoFocus} required={required}
-            value={formData[name]} onChange={onChange} onKeyDown={onKeyDown} hidden={hidden}
+            value={formData[name]} onChange={onChange} onKeyDown={onKeyDown} hidden={hidden} checked={formData[name]}
         />
     </>
 }

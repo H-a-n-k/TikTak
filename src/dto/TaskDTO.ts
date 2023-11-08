@@ -17,7 +17,7 @@ export default class TaskDTO extends Task {
     constructor(t: Task, dbo?: Dbo) { 
         super(t.name, t.content, t.reward,
             t.penalty, t.user, t.begin, t.deadline,
-            t.categoryID, t.cycleArr, t.cycleTime, t.cycleEnd,
+            t.categoryID, t.isRepeated, t.scheduleType, t.noCycle, t.cycleArr, t.cycleTime, t.cycleEnd,
             t.target, t.superTaskID, t.required
         );
         this.id = t.id;

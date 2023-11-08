@@ -7,8 +7,10 @@ const ToDMYFormat = (date: Date): string => {
     return dmy
 }
 
-const ToYMDFormat = (date: Date): string => {
-    if (!date) return '';
+const ToYMDFormat = (_date: Date): string => {
+    if (!_date) return '';
+    var date = new Date(_date)
+
     date.setHours(date.getHours() - (date.getTimezoneOffset() / 60))
     var ymd = date.toISOString().split('.')[0];
 
@@ -29,6 +31,12 @@ function addDays(date: Date, days: number): Date {
     return result;
 }
 
+function addMonths(date: Date, months: number): Date {
+    var result = new Date(date);
+    result.setMonth(result.getMonth() + months);
+    return result;
+}
+
 function getDateStart(date: Date): Date { 
     var newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
@@ -41,4 +49,4 @@ function getDateEnd(date: Date): Date {
     return newDate;
 }
 
-export { ToDMYFormat, ToYMDFormat, DisplayDate, addDays, getDateStart, getDateEnd }
+export { ToDMYFormat, ToYMDFormat, DisplayDate, addDays, addMonths, getDateStart, getDateEnd }

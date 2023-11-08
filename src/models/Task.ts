@@ -7,6 +7,12 @@ interface TimeSpan {
     month: number
 }
 
+export enum ScheduleType {
+    Day = 'day',
+    Week = 'week',
+    Month = 'month'
+}
+
 export enum TaskState {
     new = "New",
     progress = "Progress",
@@ -14,6 +20,15 @@ export enum TaskState {
     late = "Late",
     failed = "Failed",
     disable = 'Disable'
+}
+
+export enum TaskCols { 
+    id = 'id',
+    begin = 'begin',
+    isRepeated = 'isRepeated',
+    scheduleType = 'scheduleType',
+    cycleArr = 'cycleArr',
+    noCycle = 'noCycle'
 }
 
 export default class Task implements TableItem { 
@@ -31,7 +46,10 @@ export default class Task implements TableItem {
     categoryID?: number = -1;
 
     //repeat
-    cycleArr?: number[];
+    isRepeated?: boolean;
+    scheduleType?: ScheduleType;
+    noCycle?: number;
+    cycleArr?: string[];
     cycleTime?: TimeSpan;
     cycleEnd?: Date;
 
@@ -46,7 +64,7 @@ export default class Task implements TableItem {
         name?: string, content?: string,
         reward?: number, penalty?: number, user?: Nullable<User>,
         begin?: string, deadline?: string, categoryID?: number, 
-        cycleArr?: number[], cycleTime?: TimeSpan, cycleEnd?: Date,
+        isRepeated?: boolean, scheduleType?: ScheduleType, noCycle?: number, cycleArr?: string[], cycleTime?: TimeSpan, cycleEnd?: Date,
         target?: number,
         superTaskID?: number,
         required?: boolean,
@@ -60,6 +78,9 @@ export default class Task implements TableItem {
         this.deadline = deadline// || ToYMDFormat(getDateEnd(new Date(Date.now())));
         this.categoryID = categoryID;
         this.user = user;
+        this.isRepeated = isRepeated
+        this.scheduleType = scheduleType;
+        this.noCycle = noCycle
         this.cycleArr = cycleArr;
         this.cycleTime = cycleTime;
         this.cycleEnd = cycleEnd;

@@ -7,6 +7,8 @@ import CRUDtemplate from "../components/shared/CRUDtemplate";
 import { getListCate } from '../services/category';
 import { useGlobalContext } from '../contexts/GlobalContext';
 import GeneralObject from '../models/GeneralObject';
+import SchedulePicker from '../components/task/SchedulePicker';
+import { Dbo } from '../data/dbo';
 
 const TableColumns: TableColumn[] = [
     {
@@ -94,7 +96,6 @@ const inputsAdd: FormInputInfo[] = [
         name: "deadline",
         label: "deadline"
     },
-
 ]
 
 const TaskPage = () => {
@@ -139,16 +140,59 @@ const TaskPage = () => {
         // eslint-disable-next-line
     }, [dbo, refresh])
 
-    const inpsAdd: (FormInputInfo | FormInputGenerator)[] = [...inputsAdd,
+    const CycleTask: FormInputGenerator = useMemo(() => { 
+        return {
+            generator: (formData: any, setFormData: React.Dispatch<any>) => {
+
+                return <>
+                    <SchedulePicker formData={formData} setFormData={setFormData} />
+                </>
+            }
+        }
+    }, [])
+
+    const inpsAdd: (FormInputInfo | FormInputGenerator)[] = useMemo(() => { 
+        return [...inputsAdd,
         { type: FormInputType.selectNumber, label: 'Category', name: 'categoryID', options: cates } as FormInputInfo,
-        SelectSuperTask
-    ]
+            SelectSuperTask,
+        {
+            type: FormInputType.checkbox,
+            name: "isRepeated",
+            label: "Repeat"
+        },
+            CycleTask,
+        ]
+
+    }, [cates, CycleTask, SelectSuperTask])
+
+    const checkBeforeAddEdit = (item: Task): boolean => {
+        if (!item.name) return false;
+        if (item.cycleArr) { 
+            item.cycleArr.sort()
+        }
+
+        return true;
+    }
+
+    const onAdd = (dbo: Dbo, item: Task): boolean => { 
+        if (!checkBeforeAddEdit(item)) return false;
+
+        return addTask(dbo, item)
+    }
+
+    const onEdit = (dbo: Dbo, item: Task): boolean => {
+        if (!checkBeforeAddEdit(item)) return false;
+
+        return updateTask(dbo, item)
+    }
     
-    return <CRUDtemplate<Task>
-        title="Task" TableColumns={TableColumns} data={data}
-        inputsAdd={inpsAdd} setRefresh={setRefresh}
-        addService={addTask} editService={updateTask} deleteService={deleteTask}
-    />
+    return <div className='task-page'>
+        <CRUDtemplate<Task>
+            title="Task" TableColumns={TableColumns} data={data}
+            inputsAdd={inpsAdd} setRefresh={setRefresh}
+            addService={onAdd} editService={onEdit} deleteService={deleteTask}
+        />
+    </div>
 }
 
 export default TaskPage
