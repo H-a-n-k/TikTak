@@ -98,3 +98,21 @@ export const getListTaskOfCate = (dbo: Dbo, cateID: number): Task[] => {
 
     return data;
 };
+
+export const updateSubTasks = (dbo: Dbo, task: TaskDTO): boolean => { 
+    const ids = task.subTasks?.map(x => x.id)//new subtask ids
+    if (!ids) return true;
+
+    const oldSubTasks = getListSubTask(dbo, task.id, false);
+    if (ids.length === oldSubTasks.length) return true;
+
+    oldSubTasks.forEach(x => { 
+        if (!ids.includes(x.id)) { 
+            //if new subtasks id not include this id, remove its supertask id
+            x.superTaskID = undefined;
+            if (!updateTask(dbo, x)) return false;
+        }
+    })
+
+    return true;
+}

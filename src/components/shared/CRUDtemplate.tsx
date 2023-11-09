@@ -3,28 +3,35 @@ import { useGlobalContext } from "../../contexts/GlobalContext"
 import DataTable, { TableAction, TableColumn } from "../../components/shared/DataTable";
 import AddEditForm from "../../components/shared/AddEditForm";
 import { FormInputGenerator, FormInputInfo, FormInputType } from "../../components/shared/FormInput";
-import { DeleteIcon, EditIcon } from "../../utils/icons";
+import { DeleteIcon, EditIcon, SearchIcon } from "../../utils/icons";
 import ConfirmDialog from "../../components/shared/ConfirmDialog";
 import TableItem from "../../models/TableItem";
 import { Dbo } from "../../data/dbo";
 import GeneralObject from "../../models/GeneralObject";
 
 enum Mode {
-    List, Add, Edit, Delete
+    List, Add, Edit, Delete, Detail
 }
 
 export interface CRUDtemplateProps<T> { 
     title: string, TableColumns: TableColumn[],
     data: T[],
     setRefresh: React.Dispatch<React.SetStateAction<boolean>>,
-    inputsAdd: (FormInputInfo | FormInputGenerator)[], inputsEdit?: (FormInputInfo | FormInputGenerator)[],
+    defaultObject?: GeneralObject,
+    inputsAdd: (FormInputInfo | FormInputGenerator)[],
+    inputsEdit?: (FormInputInfo | FormInputGenerator)[],
+    createDetailDialog?: (object: any, closeDialog: ()=>void) => JSX.Element,
     addService: (dbo: Dbo, item: T) => boolean,
     editService: (dbo: Dbo, item: T) => boolean,
     deleteService: (dbo: Dbo, id: number) => boolean
 }
 
 export default function CRUDtemplate<T extends TableItem>(
-    { title, TableColumns, data, setRefresh, inputsAdd, inputsEdit, addService, editService, deleteService }: CRUDtemplateProps<T>
+    {
+        title, TableColumns, data, setRefresh,
+        defaultObject, inputsAdd, inputsEdit, createDetailDialog,
+        addService, editService, deleteService
+    }: CRUDtemplateProps<T>
 ) {
 
     if (!inputsEdit) inputsEdit = [...inputsAdd]
@@ -45,23 +52,36 @@ export default function CRUDtemplate<T extends TableItem>(
 
     const columns: TableColumn[] = TableColumns;
     const actions: TableAction<T>[] = useMemo(
-        () => [
-            {
-                icon: <EditIcon />,
-                action: (x: T) => {
-                    setSelectedItem(x);
-                    setMode(Mode.Edit)
+        () => { 
+            const res: TableAction<T>[] = [
+                {
+                    icon: <EditIcon />,
+                    action: (x: T) => {
+                        setSelectedItem(x);
+                        setMode(Mode.Edit)
+                    }
+                },
+                {
+                    icon: <DeleteIcon />,
+                    action: (x: T) => {
+                        setSelectedItem(x)
+                        setMode(Mode.Delete)
+                    }
                 }
-            },
-            {
-                icon: <DeleteIcon />,
-                action: (x: T) => {
-                    setSelectedItem(x)
-                    setMode(Mode.Delete)
-                }
+            ]
+            if (createDetailDialog) { 
+                res.unshift({
+                    icon: <SearchIcon />,
+                    action: (x: T) => {
+                        setSelectedItem(x);
+                        setMode(Mode.Detail)
+                    }
+                })
             }
-        ]
-        , [setSelectedItem, setMode]
+
+            return res;
+        }
+        , [setSelectedItem, setMode, createDetailDialog]
     )
 
     const onAdd = (item: GeneralObject): boolean => {
@@ -100,7 +120,7 @@ export default function CRUDtemplate<T extends TableItem>(
         {data && <DataTable dataSource={data} columns={columns} actions={actions} />}
 
         {mode === Mode.Add && !selectedItem && <>
-            <AddEditForm<GeneralObject> object={{}} inputs={inputsAdd} closeDialog={closeDialog} onSubmit={onAdd} />
+            <AddEditForm<GeneralObject> object={defaultObject || {}} inputs={inputsAdd} closeDialog={closeDialog} onSubmit={onAdd} />
         </>}
 
         {mode === Mode.Edit && selectedItem && <>
@@ -109,6 +129,10 @@ export default function CRUDtemplate<T extends TableItem>(
 
         {mode === Mode.Delete && <>
             <ConfirmDialog onConfirm={onDelete} closeDialog={closeDialog} message={`delete item #${selectedItem?.id}?`} />
+        </>}
+
+        {mode === Mode.Detail && typeof createDetailDialog === 'function' && selectedItem && <>
+            {createDetailDialog(selectedItem, closeDialog)}
         </>}
     </>
 }

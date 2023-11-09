@@ -37,15 +37,19 @@ function addMonths(date: Date, months: number): Date {
     return result;
 }
 
-function getDateStart(date: Date): Date { 
+function getDateStart(date?: Date): Date { 
+    if(!date) date = new Date(Date.now())
+
     var newDate = new Date(date);
     newDate.setHours(0, 0, 0, 0);
     return newDate;
 }
 
-function getDateEnd(date: Date): Date {
+function getDateEnd(date?: Date): Date {
+    if (!date) date = new Date(Date.now())
+
     var newDate = new Date(date);
-    newDate.setHours(23, 59, 59, 0);
+    newDate.setHours(23, 59, 0, 0);
     return newDate;
 }
 

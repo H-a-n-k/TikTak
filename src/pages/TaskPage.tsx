@@ -2,13 +2,17 @@ import { useMemo, useState } from 'react'
 import { DataProcessor, TableColumn } from "../components/shared/DataTable";
 import { FormInputGenerator, FormInputInfo, FormInputType, SelectOpt } from "../components/shared/FormInput";
 import Task from "../models/Task";
-import { addTask, deleteTask, getListSubTask, getListTask, getListTaskDTO, updateTask } from "../services/task";
+import { addTask, deleteTask, getListSubTask, getListTask, getListTaskDTO, updateSubTasks, updateTask } from "../services/task";
 import CRUDtemplate from "../components/shared/CRUDtemplate";
 import { getListCate } from '../services/category';
 import { useGlobalContext } from '../contexts/GlobalContext';
 import GeneralObject from '../models/GeneralObject';
 import SchedulePicker from '../components/task/SchedulePicker';
 import { Dbo } from '../data/dbo';
+import { ToYMDFormat, getDateEnd, getDateStart } from '../utils/datetime';
+import SubTaskEdit from '../components/task/SubTasksEdit';
+import TaskDTO from '../dto/TaskDTO';
+import DetailDialog from '../components/task/DetailDialog';
 
 const TableColumns: TableColumn[] = [
     {
@@ -98,6 +102,14 @@ const inputsAdd: FormInputInfo[] = [
     },
 ]
 
+const defaultObject: Task = {
+    id: -1,
+    reward: 0,
+    penalty: 0,
+    begin: ToYMDFormat(getDateStart()),
+    deadline: ToYMDFormat(getDateEnd()),
+}
+
 const TaskPage = () => {
     const [refresh, setRefresh] = useState(false);
 
@@ -165,8 +177,32 @@ const TaskPage = () => {
 
     }, [cates, CycleTask, SelectSuperTask])
 
+    const EditSubTasks: FormInputGenerator = useMemo(() => {
+        return {
+            generator: (formData: any, setFormData: React.Dispatch<any>) => {
+
+                return <>
+                    <SubTaskEdit formData={formData} setFormData={setFormData} />
+                </>
+            }
+        }
+    }, [])
+
+    const inpsEdit: (FormInputInfo | FormInputGenerator)[] = useMemo(() => {
+        return [...inpsAdd,
+            EditSubTasks
+        ]
+
+    }, [EditSubTasks, inpsAdd])
+
     const checkBeforeAddEdit = (item: Task): boolean => {
-        if (!item.name) return false;
+        const { name, reward, penalty, begin, deadline, noCycle} = item
+        if (!name) return false;
+        if (reward === undefined || reward < 0) return false;
+        if (penalty === undefined || penalty < 0) return false;
+        if (begin && deadline && new Date(begin) >= new Date(deadline)) return false;
+        if (noCycle && noCycle < 1) return false;
+
         if (item.cycleArr) { 
             item.cycleArr.sort()
         }
@@ -174,22 +210,36 @@ const TaskPage = () => {
         return true;
     }
 
-    const onAdd = (dbo: Dbo, item: Task): boolean => { 
-        if (!checkBeforeAddEdit(item)) return false;
+    //add form vallidation
+    const onAdd = (dbo: Dbo, item: TaskDTO): boolean => { 
+        if (!checkBeforeAddEdit(item)) {
+            return false;
+        }
+        const { begin } = item;
+        if (begin && new Date(begin) < getDateStart()) return false;
 
         return addTask(dbo, item)
     }
 
-    const onEdit = (dbo: Dbo, item: Task): boolean => {
-        if (!checkBeforeAddEdit(item)) return false;
+    //edit add form vallidation
+    const onEdit = (dbo: Dbo, item: TaskDTO): boolean => {
+        if (!checkBeforeAddEdit(item)) {
+            return false;
+        }
+
+        //update subtasks
+        if (!updateSubTasks(dbo, item)) {
+            return false;
+        }
 
         return updateTask(dbo, item)
     }
     
     return <div className='task-page'>
-        <CRUDtemplate<Task>
+        <CRUDtemplate<TaskDTO>
             title="Task" TableColumns={TableColumns} data={data}
-            inputsAdd={inpsAdd} setRefresh={setRefresh}
+            defaultObject={defaultObject} inputsAdd={inpsAdd}
+            createDetailDialog={(obj, closeDialog) => <DetailDialog object={obj} closeDialog={closeDialog} />} inputsEdit={inpsEdit} setRefresh={setRefresh}
             addService={onAdd} editService={onEdit} deleteService={deleteTask}
         />
     </div>

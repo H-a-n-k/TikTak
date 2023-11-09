@@ -28,7 +28,7 @@ export enum TaskCols {
     isRepeated = 'isRepeated',
     scheduleType = 'scheduleType',
     cycleArr = 'cycleArr',
-    noCycle = 'noCycle'
+    noCycle = 'noCycle',
 }
 
 export default class Task implements TableItem { 

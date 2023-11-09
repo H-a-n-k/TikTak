@@ -4,6 +4,10 @@ import Task, { TaskState } from '../models/Task'
 import { findCate } from '../services/category'
 import { findTask, getListSubTask } from '../services/task'
 
+export enum TaskDTOCols { 
+    subTasks = 'subTasks'
+}
+
 export default class TaskDTO extends Task { 
     
     category?: Category

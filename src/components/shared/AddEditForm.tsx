@@ -7,7 +7,7 @@ interface Props<T> {
     object: T,
     inputs: (FormInputInfo | FormInputGenerator)[],
     closeDialog: () => void,
-    onSubmit: (t: T) => boolean
+    onSubmit: (t: T) => boolean,
 }
 
 export default function AddEditForm<T extends GeneralObject>({ object, inputs, closeDialog, onSubmit } : Props<T>) { 

@@ -1,6 +1,7 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ToYMDFormat, addDays, addMonths, getDateStart } from "../../utils/datetime";
 import { ScheduleType, TaskCols } from "../../models/Task";
+import { ArrowDown, ArrowUp } from "../../utils/icons";
 
 interface ScheduleItem { 
     label: string,
@@ -77,6 +78,8 @@ interface Props {
 
 export default function SchedulePicker({ formData, setFormData }: Props) { 
     
+    const [openPicker, setOpenPicker] = useState(true);
+
     const name: string = TaskCols.cycleArr
 
     const active = formData[TaskCols.isRepeated];
@@ -99,7 +102,7 @@ export default function SchedulePicker({ formData, setFormData }: Props) {
 
         var type: string = formData[TaskCols.scheduleType]
         var begin: string = formData[TaskCols.begin]
-        var beginDate = begin ? new Date(begin) : getDateStart(new Date(Date.now()))
+        var beginDate = begin ? new Date(begin) : getDateStart()
         var count: number = formData[TaskCols.noCycle] || 1
 
         switch (type) {
@@ -140,27 +143,44 @@ export default function SchedulePicker({ formData, setFormData }: Props) {
         setFormData({...formData, [name]: value})
     }
 
+    const getResult = (): string => { 
+        var res: string = '';
+        var n: number = formData[TaskCols.noCycle];
+        var type: string = formData[TaskCols.scheduleType]
+        var arr: number[] = formData[TaskCols.cycleArr]
+        res = `${arr.length} day(s) selected in ${n} ${type}(s)`
+
+        return res;
+    }
+
     return <div className="schedule-picker">
-        <p>Repeat every: </p>
         <div>
+            Repeat every: 
+            <input type="number" name={TaskCols.noCycle} id={TaskCols.noCycle} value={formData[TaskCols.noCycle]} onChange={onChange} title="number of day/week/month" />
             <select name={TaskCols.scheduleType} id={TaskCols.scheduleType} value={formData[TaskCols.scheduleType]} onChange={onChange}>
                 <option value={ScheduleType.Day}>Day</option>
                 <option value={ScheduleType.Week}>Week</option>
                 <option value={ScheduleType.Month}>Month</option>
             </select>
         </div>
-
-        <div>
-            <input type="number" name={TaskCols.noCycle} id={TaskCols.noCycle} value={formData[TaskCols.noCycle]} onChange={onChange} />
-            <label htmlFor={TaskCols.noCycle}></label>
-        </div>
     
-        <p>pick schedule: </p>
-        <div className="schedule-items">
-            {items.map(x => <div key={name + '-' + x.value} className="schedule-item">
-                <input type="checkbox" name={name} id={name + '-' + x.value} value={x.value} checked={formData[name]?.includes(x.value)} onChange={onArrChange} />
-                <label htmlFor={name + '-' + x.value}>{x.label}</label>
-            </div>)}
-        </div>
+        <p>
+            <span onClick={() => setOpenPicker(x => !x)} className="pointer">
+                {openPicker ?
+                    <ArrowDown /> :
+                    <ArrowUp />
+                }
+            </span>
+            {getResult()}
+        </p>
+
+        {openPicker &&
+            <div className="schedule-items">
+                {items.map(x => <div key={name + '-' + x.value} className="schedule-item">
+                    <input type="checkbox" name={name} id={name + '-' + x.value} value={x.value} checked={formData[name]?.includes(x.value)} onChange={onArrChange} />
+                    <label htmlFor={name + '-' + x.value}>{x.label}</label>
+                </div>)}
+            </div>
+        }
     </div>
 }
